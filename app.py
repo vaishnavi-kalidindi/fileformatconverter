@@ -23,7 +23,7 @@ def get_columns(ds):
         print(f'Schema not found for {ds}')
         return
     
-    
+
 def process_file(src_base_dir,ds,tgt_base_dir):
     for file in glob.glob(f'{src_base_dir}/{ds}/part*'):
                 df = pd.read_csv(file, names=get_columns(ds))
@@ -39,11 +39,15 @@ def process_file(src_base_dir,ds,tgt_base_dir):
 def main():
     src_base_dir=os.environ['SRC_BASE_DIR']
     tgt_base_dir=os.environ['TGT_BASE_DIR']
-    
-    for path in glob.glob(f'{src_base_dir}/*'):
-        if os.path.isdir(path):
-             process_file(src_base_dir,os.path.split(path)[1],tgt_base_dir)
-             
+    datasets=os.environ.get('DATASETS')#orders,order_items
+    if not datasets:
+        for path in glob.glob(f'{src_base_dir}/*'):
+            if os.path.isdir(path):
+                 process_file(src_base_dir,os.path.split(path)[1],tgt_base_dir)
+    else:
+         dirs=datasets.split(',')   
+         for ds in dirs:
+              process_file(src_base_dir,ds,tgt_base_dir)      
 if __name__ == '__main__':
     main()
 
